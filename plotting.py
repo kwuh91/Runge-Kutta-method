@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-# import numpy as np
 
 f = open("output.txt", "r")
 xyz = f.readline() # first line is for visuals only
@@ -26,8 +25,8 @@ for line in f:
     values['x'].append(float(curr_values[xi_pos]))
     values['y'].append(float(curr_values[yi_pos]))
     values['z'].append(float(curr_values[zi_pos]))
-
-print(values)
+ 
+print(max(values['y'])) # 643.788
 
 # displaying function
 plt.plot(values['x'], values['y'], color = "green")

@@ -112,37 +112,45 @@ void runge_kutta(std::ofstream& file,
 
         parser obj;
 
-        q1 = obj.eval_exp(substitute_values_to_eq(equation1, values[i-1][xi_pos], 
-                                                             values[i-1][yi_pos], 
-                                                             values[i-1][zi_pos]));
+        q1 = obj.eval_exp(substitute_values_to_eq(equation1, 
+                                                  values[i-1][xi_pos], 
+                                                  values[i-1][yi_pos], 
+                                                  values[i-1][zi_pos]));
 
-        k1 = obj.eval_exp(substitute_values_to_eq(equation2, values[i-1][xi_pos], 
-                                                             values[i-1][yi_pos], 
-                                                             values[i-1][zi_pos]));
+        k1 = obj.eval_exp(substitute_values_to_eq(equation2, 
+                                                  values[i-1][xi_pos], 
+                                                  values[i-1][yi_pos], 
+                                                  values[i-1][zi_pos]));
 
-        q2 = obj.eval_exp(substitute_values_to_eq(equation1, values[i-1][xi_pos] + h/2, 
-                                                             values[i-1][yi_pos] + k1*h/2, 
-                                                             values[i-1][zi_pos] + q1*h/2));
+        q2 = obj.eval_exp(substitute_values_to_eq(equation1, 
+                                                  values[i-1][xi_pos] + h/2, 
+                                                  values[i-1][yi_pos] + k1*h/2, 
+                                                  values[i-1][zi_pos] + q1*h/2));
                             
-        k2 = obj.eval_exp(substitute_values_to_eq(equation2, values[i-1][xi_pos] + h/2, 
-                                                             values[i-1][yi_pos] + k1*h/2, 
-                                                             values[i-1][zi_pos] + q1*h/2));
+        k2 = obj.eval_exp(substitute_values_to_eq(equation2, 
+                                                  values[i-1][xi_pos] + h/2, 
+                                                  values[i-1][yi_pos] + k1*h/2, 
+                                                  values[i-1][zi_pos] + q1*h/2));
 
-        q3 = obj.eval_exp(substitute_values_to_eq(equation1, values[i-1][xi_pos] + h/2, 
-                                                             values[i-1][yi_pos] + k2*h/2, 
-                                                             values[i-1][zi_pos] + q2*h/2));
+        q3 = obj.eval_exp(substitute_values_to_eq(equation1, 
+                                                  values[i-1][xi_pos] + h/2, 
+                                                  values[i-1][yi_pos] + k2*h/2, 
+                                                  values[i-1][zi_pos] + q2*h/2));
                             
-        k3 = obj.eval_exp(substitute_values_to_eq(equation2, values[i-1][xi_pos] + h/2, 
-                                                             values[i-1][yi_pos] + k2*h/2, 
-                                                             values[i-1][zi_pos] + q2*h/2));   
+        k3 = obj.eval_exp(substitute_values_to_eq(equation2, 
+                                                  values[i-1][xi_pos] + h/2, 
+                                                  values[i-1][yi_pos] + k2*h/2, 
+                                                  values[i-1][zi_pos] + q2*h/2));   
 
-        q4 = obj.eval_exp(substitute_values_to_eq(equation1, values[i-1][xi_pos] + h, 
-                                                             values[i-1][yi_pos] + k3*h, 
-                                                             values[i-1][zi_pos] + q3*h));
+        q4 = obj.eval_exp(substitute_values_to_eq(equation1, 
+                                                  values[i-1][xi_pos] + h, 
+                                                  values[i-1][yi_pos] + k3*h, 
+                                                  values[i-1][zi_pos] + q3*h));
                             
-        k4 = obj.eval_exp(substitute_values_to_eq(equation2, values[i-1][xi_pos] + h, 
-                                                             values[i-1][yi_pos] + k3*h, 
-                                                             values[i-1][zi_pos] + q3*h));      
+        k4 = obj.eval_exp(substitute_values_to_eq(equation2, 
+                                                  values[i-1][xi_pos] + h, 
+                                                  values[i-1][yi_pos] + k3*h, 
+                                                  values[i-1][zi_pos] + q3*h));      
 
         zi = values[i-1][zi_pos] + (h/6) * (q1 + 2*q2 + 2*q3 + q4); 
         yi = values[i-1][yi_pos] + (h/6) * (k1 + 2*k2 + 2*k3 + k4);
