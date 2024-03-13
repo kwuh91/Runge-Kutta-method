@@ -42,9 +42,9 @@ using namespace std;
 enum types { DELIMITER = 1, VARIABLE, NUMBER, FUNCTION };
 const int NUMVARS = 26;
 class parser {
-    char *exp_ptr; // points to the expression
-    char token[256]; // holds current token
-    char tok_type; // holds token's type
+    char *exp_ptr;        // points to the expression
+    char token[256];      // holds current token
+    char tok_type;        // holds token's type
     double vars[NUMVARS]; // holds variable's values
     void eval_exp1(double &result);
     void eval_exp2(double &result);
@@ -58,6 +58,8 @@ public:
     double eval_exp(char *exp);
     char errormsg[64];
 };
+
+
 // Parser constructor.
 parser::parser()
 {
@@ -67,6 +69,8 @@ parser::parser()
         vars[i] = 0.0;
     errormsg[0] = '\0';
 }
+
+
 // Parser entry point.
 double parser::eval_exp(char *exp)
 {
@@ -84,6 +88,8 @@ double parser::eval_exp(char *exp)
         strcpy(errormsg, "Syntax Error");
     return result;
 }
+
+
 // Process an assignment.
 void parser::eval_exp1(double &result)
 {
@@ -112,6 +118,8 @@ void parser::eval_exp1(double &result)
     }
     eval_exp2(result);
 }
+
+
 // Add or subtract two terms.
 void parser::eval_exp2(double &result)
 {
@@ -133,6 +141,8 @@ void parser::eval_exp2(double &result)
         }
     }
 }
+
+
 // Multiply or divide two factors.
 void parser::eval_exp3(double &result)
 {
@@ -154,6 +164,8 @@ void parser::eval_exp3(double &result)
         }
     }
 }
+
+
 // Process an exponent.
 void parser::eval_exp4(double &result)
 {
@@ -166,6 +178,8 @@ void parser::eval_exp4(double &result)
         result = pow(result, temp);
     }
 }
+
+
 // Evaluate a unary + or -.
 void parser::eval_exp5(double &result)
 {
@@ -180,6 +194,8 @@ void parser::eval_exp5(double &result)
     if (op == '-')
         result = -result;
 }
+
+
 // Process a function, a parenthesized expression, a value or a variable
 void parser::eval_exp6(double &result)
 {
@@ -256,6 +272,8 @@ void parser::eval_exp6(double &result)
             strcpy(errormsg, "Syntax Error");
         }
 }
+
+
 // Obtain the next token.
 void parser::get_token()
 {
@@ -290,16 +308,5 @@ void parser::get_token()
     if ((tok_type == VARIABLE) && (token[1]))
         strcpy(errormsg, "Only first letter of variables is considered");
 }
- 
-// int main()
-// {
-//     char eq[256] = "(3 * 2) / (1.2)";
-//     parser ob;
-
-//     double ans = ob.eval_exp(eq);
-
-//     std::cout << ans << std::endl;
-//     return 0;
-// }
 
 #endif

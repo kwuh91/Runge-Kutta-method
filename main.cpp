@@ -7,6 +7,8 @@
 
 #include "parser.h"
 
+
+// replace all ocurrences of a string with a string
 std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
     size_t start_pos = 0;
     while((start_pos = str.find(from, start_pos)) != std::string::npos) {
@@ -16,17 +18,18 @@ std::string ReplaceAll(std::string str, const std::string& from, const std::stri
     return str;
 }
 
-// equation = -((1,804 * z^2) / (1000)) - (490 / 1000) 
 
-char * substitute_values_to_eq(std::string equation, 
-                                    double x,
-                                    double y,
-                                    double z) {
+// replace x, y and z with values
+char* substitute_values_to_eq(std::string& equation, 
+                              double x,
+                              double y,
+                              double z) {
     std::string res;
     res = ReplaceAll(equation, "x", std::to_string(x));
     res = ReplaceAll(res,      "y", std::to_string(y));
     res = ReplaceAll(res,      "z", std::to_string(z));
 
+    // turning std::string to a c-style string for parser
     const int len = res.length();
     char* char_array = new char[len + 1];
     strcpy(char_array, res.c_str()); 
@@ -34,8 +37,10 @@ char * substitute_values_to_eq(std::string equation,
     return char_array;
 }
 
+
+// write the result values to console and file
 void print_table(double **table, int ii, std::ofstream& file) {
-    const int xi_pos = 0, yi_pos = 1, zi_pos = 2;
+    const int xi_pos = 0, yi_pos = 1, zi_pos = 2; // declare positions
 
     // writing to console output
     std::cout << std::setw(15) << "i" 
@@ -62,27 +67,24 @@ void print_table(double **table, int ii, std::ofstream& file) {
     }
 }
 
+
+// runge kutta (4) method implementation
 void runge_kutta(std::ofstream& file,
-                 std::string equation1,
-                 std::string equation2,
+                 std::string&   equation1,
+                 std::string&   equation2,
                  int    n,
                  double h, 
                  double x0, 
                  double y0, 
                  double z0) {
-
-    // bool x_in_eq = equation.find('x') == std::string::npos;
-    // bool y_in_eq = equation.find('y') == std::string::npos;
-    // bool z_in_eq = equation.find('z') == std::string::npos;
-
-    int i = 1;
+    int i = 1; // initial values are given (i = 0)
     
     // initialize 2d array with xi, yi, zi values
     double** values = new double*[n+1];
     for (size_t j = 0; j < n+1; j++){
-        values[j] = new double[3](); // zeros ?
+        values[j] = new double[3](); // fill with zeros
     }
-    const int xi_pos = 0, yi_pos = 1, zi_pos = 2;
+    const int xi_pos = 0, yi_pos = 1, zi_pos = 2; // declare positions
 
     // set initial values
     values[0][xi_pos] = x0;
@@ -91,12 +93,25 @@ void runge_kutta(std::ofstream& file,
 
     double zi, yi, k1, k2, k3, k4, q1, q2, q3, q4;
     while (i < n + 1) {
+        // z' = U(x, y, z)
+        // y' = V(x, y, z)
+
+        // z_i = z_(i-1) + h/6 * (q_1 + 2*q_2 + 2*q_3 + q_4)
+
         // y_i = y_(i-1) + h/6 * (k_1 + 2*k_2 + 2*k_3 + k_4)
-        // k_1 = f(x_(i-1),       y_(i-1))
-        // k_2 = f(x_(i-1) + h/2, y_(i-1) + h/2 * k_1)
-        // k_3 = f(x_(i-1) + h/2, y_(i-1) + h/2 * k_2)
-        // k_4 = f(x_(i-1) + h,   y_(i-1) + h   * k_3)
+
+        // q_1 = U(x_(i-1),       y_(i-1),             z_(i-1))
+        // q_2 = U(x_(i-1) + h/2, y_(i-1) + h/2 * k_1, z_(i-1) + h/2 * q_1)
+        // q_3 = U(x_(i-1) + h/2, y_(i-1) + h/2 * k_2, z_(i-1) + h/2 * q_2)
+        // q_4 = U(x_(i-1) + h,   y_(i-1) + h   * k_3, z_(i-1) + h   * q_3)
+
+        // k_1 = V(x_(i-1),       y_(i-1),             z_(i-1))
+        // k_2 = V(x_(i-1) + h/2, y_(i-1) + h/2 * k_1, z_(i-1) + h/2 * q_1)
+        // k_3 = V(x_(i-1) + h/2, y_(i-1) + h/2 * k_2, z_(i-1) + h/2 * q_2)
+        // k_4 = V(x_(i-1) + h,   y_(i-1) + h   * k_3, z_(i-1) + h   * q_3)
+
         parser obj;
+
         q1 = obj.eval_exp(substitute_values_to_eq(equation1, values[i-1][xi_pos], 
                                                              values[i-1][yi_pos], 
                                                              values[i-1][zi_pos]));
@@ -129,9 +144,10 @@ void runge_kutta(std::ofstream& file,
                                                              values[i-1][yi_pos] + k3*h, 
                                                              values[i-1][zi_pos] + q3*h));      
 
-        zi = values[i-1][zi_pos] + (h/6) * (q1 + 2*q2 + 2*q3 + q4);
+        zi = values[i-1][zi_pos] + (h/6) * (q1 + 2*q2 + 2*q3 + q4); 
         yi = values[i-1][yi_pos] + (h/6) * (k1 + 2*k2 + 2*k3 + k4);
 
+        // add values to the table
         values[i][xi_pos] = values[i-1][xi_pos] + h; 
         values[i][yi_pos] = yi;
         values[i][zi_pos] = zi;
@@ -144,12 +160,20 @@ void runge_kutta(std::ofstream& file,
 
 int main(){
     std::ofstream myfile;
-    myfile.open("example.txt");
+    myfile.open("output.txt");
 
-    // std::cout << "Hello World!" << std::endl;
+    // 1000 * x'' + 1.804 * (x')^2 + 490 = 0
+    // z = x'
+    //
+    // => z' = -0.001804 * z^2 - 0.49 
+    //    x' = z
+    //
+    // x(0) = 0
+    // z(0) = 50
+
     std::string eq1 = "-0.001804 * z^2 - 0.49";
     std::string eq2 = "z";
-    // ans: y = e^(2 * x) * (-0.00341797*x^4 + 0.0625*x^3 - 0.25*x^2 + 0.75*x - 9.75)
+
     runge_kutta(myfile, eq1, eq2, 1000, 0.1, 0, 0, 50);
 
     myfile.close();
